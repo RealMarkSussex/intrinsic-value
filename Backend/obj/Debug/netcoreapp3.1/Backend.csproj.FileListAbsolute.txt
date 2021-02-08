@@ -1,0 +1,9 @@
+C:\git\IntrinsicValue\Backend\bin\Debug\netcoreapp3.1\Backend.deps.json
+C:\git\IntrinsicValue\Backend\bin\Debug\netcoreapp3.1\Backend.dll
+C:\git\IntrinsicValue\Backend\obj\Debug\netcoreapp3.1\Backend.csprojAssemblyReference.cache
+C:\git\IntrinsicValue\Backend\obj\Debug\netcoreapp3.1\Backend.AssemblyInfoInputs.cache
+C:\git\IntrinsicValue\Backend\obj\Debug\netcoreapp3.1\Backend.AssemblyInfo.cs
+C:\git\IntrinsicValue\Backend\bin\Debug\netcoreapp3.1\Backend.pdb
+C:\git\IntrinsicValue\Backend\obj\Debug\netcoreapp3.1\Backend.csproj.CoreCompileInputs.cache
+C:\git\IntrinsicValue\Backend\obj\Debug\netcoreapp3.1\Backend.dll
+C:\git\IntrinsicValue\Backend\obj\Debug\netcoreapp3.1\Backend.pdb
