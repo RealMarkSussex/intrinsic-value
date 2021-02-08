@@ -10,22 +10,35 @@ using System.Threading;
 using System.Linq;
 using System.IO;
 using System.Text.Json;
+using Backend.Pages.MsmMoney;
+using Interface.Models;
 
 namespace Interface
 {
     class Program
     {
+        // quickfs
         private static IWebDriver _driver;
         private static Backend.Pages.QuickFs.HomePage _homePageQuickFs;
         private static SearchResultsPage _searchResultsPage;
         private static CompanyPage _companyPage;
         private static LoginPage _loginPage;
         private static BalanceSheetPage _balanceSheetPage;
+
+        //yahoo
         private static Backend.Pages.Yahoo.HomePage _homePageYahoo;
-        private static SummaryPage _summaryPage;
+        private static Backend.Pages.Yahoo.SummaryPage _summaryPageYahoo;
+        private static Backend.Pages.Yahoo.AnalysisPage _analysisPageYahoo;
+
+        //MSM
+        private static Backend.Pages.MsmMoney.HomePage _homePageMsmMoney;
+        private static CompaniesAndMarketsPage _companiesAndMarketsPage;
+        private static Backend.Pages.MsmMoney.SummaryPage _summaryPageMsmMoney;
+        private static Backend.Pages.MsmMoney.AnalysisPage _analysisPageMsmMoney;
+
+        //Other variables
         private static int _shortPause;
 
-        // TODO More error handling
         static void Main(string[] args)
         {
             Console.WriteLine("Input your quickfs email: ");
@@ -46,7 +59,7 @@ namespace Interface
 
             _shortPause = 3 * 1000;
             _driver = new ChromeDriver();
-
+            _driver.Manage().Window.Maximize();
             //quickfs
             _homePageQuickFs = new Backend.Pages.QuickFs.HomePage(_driver);
             _searchResultsPage = new SearchResultsPage(_driver);
@@ -56,7 +69,14 @@ namespace Interface
 
             //yahoo
             _homePageYahoo = new Backend.Pages.Yahoo.HomePage(_driver);
-            _summaryPage = new SummaryPage(_driver);
+            _summaryPageYahoo = new Backend.Pages.Yahoo.SummaryPage(_driver);
+            _analysisPageYahoo = new Backend.Pages.Yahoo.AnalysisPage(_driver);
+
+            //msm money
+            _homePageMsmMoney = new Backend.Pages.MsmMoney.HomePage(_driver);
+            _companiesAndMarketsPage = new CompaniesAndMarketsPage(_driver);
+            _summaryPageMsmMoney = new Backend.Pages.MsmMoney.SummaryPage(_driver);
+            _analysisPageMsmMoney = new Backend.Pages.MsmMoney.AnalysisPage(_driver);
 
             TickersToStickers(tickers, loginModel);
 
@@ -76,15 +96,21 @@ namespace Interface
 
             Login(loginModel);
             var outputVariables = (tickers.Select(ticker => TickerToSticker(ticker))).ToList();
+            var date = DateTime.Today.ToString("yyyyMMdd");
 
-            // TODO Write to json file
-            var json = JsonSerializer.Serialize(outputVariables);
-            var fileName = $"{DateTime.Today:yyyyMMdd}.json";
+            var jsonData = new JsonData
+            {
+                OutputNumbers = outputVariables,
+                Date = date,
+                Tickers = tickers
+            };
+            var fileName = $"intrinsicValue.json";
+            var json = JsonSerializer.Serialize(jsonData);
             if (File.Exists(fileName))
             {
                 File.Delete(fileName);
             }
-            File.WriteAllText(fileName, json);
+            File.AppendAllText(fileName, json);
         }
 
         private static OutputVariables TickerToSticker(string ticker)
@@ -112,7 +138,27 @@ namespace Interface
                 _homePageYahoo.SearchCompany(ticker);
                 Thread.Sleep(_shortPause);
 
-                _summaryPage.CollectCurrentTTMEPS(inputVariables);
+                _summaryPageYahoo.CollectCurrentTTMEPS(inputVariables);
+                Thread.Sleep(_shortPause);
+                _summaryPageYahoo.ClickAnalysisPageLink();
+                Thread.Sleep(_shortPause);
+                _analysisPageYahoo.CollectGrowthEstimate(inputVariables);
+                Thread.Sleep(_shortPause);
+
+                _driver.Navigate().GoToUrl("https://www.msn.com/en-gb/money");
+                Thread.Sleep(_shortPause);
+                _homePageMsmMoney.ClickAgreeToCookies();
+                Thread.Sleep(_shortPause);
+                _homePageMsmMoney.ClickCompaniesAndMarketsLink();
+                Thread.Sleep(_shortPause);
+                _companiesAndMarketsPage.SearchCompany(ticker);
+                Thread.Sleep(10 * 1000);
+                _summaryPageMsmMoney.ClickAnalysisLink();
+                Thread.Sleep(_shortPause);
+                _analysisPageMsmMoney.ClickPriceRatiosTab();
+                Thread.Sleep(_shortPause);
+                _analysisPageMsmMoney.CollectPEHighLowAverage(inputVariables);
+
                 var inputToOutputMapper = new InputToOutput();
                 _driver.Navigate().GoToUrl("https://quickfs.net/home");
                 return inputToOutputMapper.inputToOutput(inputVariables);

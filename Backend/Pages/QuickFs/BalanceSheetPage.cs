@@ -24,9 +24,10 @@ namespace Backend.Pages.QuickFs
             if(firstEquityDouble <= 0 || secondEquityDouble < 0)
             {
                 inputVariables.Equity10Y = -1;
-            } else
+            } 
+            else
             {
-                inputVariables.Equity10Y = (Math.Pow(secondEquityDouble / firstEquityDouble, 0.1) - 1) * 100;
+                inputVariables.Equity10Y = (Math.Pow(secondEquityDouble / firstEquityDouble, 1.0 / 9.0) - 1) * 100;
             }
         }
 

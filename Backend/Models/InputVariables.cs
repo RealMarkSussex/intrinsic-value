@@ -13,5 +13,7 @@ namespace Backend.Models
         public double Equity10Y { get; set; }
         public double CurrentTTMEPS { get; set; }
         public string Ticker { get; set; }
+        public double GrowthEstimate { get; set; }
+        public double PEHighLowAverage { get; set; }
     }
 }
