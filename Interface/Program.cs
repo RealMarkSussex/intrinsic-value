@@ -106,10 +106,6 @@ namespace Interface
             };
             var fileName = $"intrinsicValue.json";
             var json = JsonSerializer.Serialize(jsonData);
-            if (File.Exists(fileName))
-            {
-                File.Delete(fileName);
-            }
             File.AppendAllText(fileName, json);
         }
 
