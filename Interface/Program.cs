@@ -97,6 +97,7 @@ namespace Interface
             Login(loginModel);
             var outputVariables = (tickers.Select(ticker => TickerToSticker(ticker))).ToList();
             var date = DateTime.Today.ToString("yyyyMMdd");
+            var uniqueId = Guid.NewGuid();
 
             var jsonData = new JsonData
             {
@@ -104,9 +105,9 @@ namespace Interface
                 Date = date,
                 Tickers = tickers
             };
-            var fileName = $"intrinsicValue.json";
+            var fileName = $"{uniqueId}{date}.json";
             var json = JsonSerializer.Serialize(jsonData);
-            File.AppendAllText(fileName, json);
+            File.WriteAllText(fileName, json);
         }
 
         private static OutputVariables TickerToSticker(string ticker)
